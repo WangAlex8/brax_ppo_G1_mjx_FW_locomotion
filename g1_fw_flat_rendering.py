@@ -91,23 +91,44 @@ def main():
     frames = []
     print(f"Rendering {total_steps} steps of the G1 robot...")
 
+    print(f"Simulating {total_steps} steps on the A100 GPU...")
+    
+  
+    jit_step = jax.jit(env.step)
+    
+    trajectory_qpos = []
+    trajectory_qvel = []
+    
+
     for _ in range(total_steps):
         rng, subkey = jax.random.split(rng)
+        act_rng, subkey = jax.random.split(subkey)
+        
+        action, _ = jit_inference_fn(state.obs, act_rng)
+        state = jit_step(state, action)
         
 
-        act_rng, subkey = jax.random.split(subkey)
-        action, _ = jit_inference_fn(state.obs, act_rng)
-    
-        state = env.step(state, action)
-      
-        mujoco.mj_step(mj_model, mj_data)
-        mj_data.qpos = np.array(state.data.qpos)
-        mj_data.qvel = np.array(state.data.qvel)
+        trajectory_qpos.append(state.data.qpos)
+        trajectory_qvel.append(state.data.qvel)
+
+    print("Transferring trajectory to CPU...")
+    trajectory_qpos = jax.device_get(trajectory_qpos)
+    trajectory_qvel = jax.device_get(trajectory_qvel)
+
+
+    print("Rendering frames to video...")
+    for i in range(total_steps):
+
+        mj_data.qpos = trajectory_qpos[i]
+        mj_data.qvel = trajectory_qvel[i]
         mujoco.mj_forward(mj_model, mj_data)
         
-        renderer.update_scene(mj_data, camera="track") # track movement
-        pixels = renderer.render()
-        frames.append(pixels)
+        renderer.update_scene(mj_data, camera="track")
+        frames.append(renderer.render())
+
+    output_path = "g1_walking_demo.mp4"
+    imageio.mimsave(output_path, frames, fps=fps)
+    print(f"video save to {output_path}")
 
   
     output_path = "g1_walking_demo.mp4"
