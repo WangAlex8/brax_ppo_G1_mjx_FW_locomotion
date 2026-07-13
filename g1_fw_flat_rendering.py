@@ -29,7 +29,7 @@ warnings.filterwarnings('ignore')
 
 def main():
     env_name = 'G1JoystickFlatTerrain'
-    env = registry.load(env_name)
+    env = registry.load(env_name, config_overrides={"impl": "jax"})
     
     ppo_params = locomotion_params.brax_ppo_config(env_name)
     network_factory = functools.partial(
