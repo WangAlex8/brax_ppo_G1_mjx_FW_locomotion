@@ -16,7 +16,7 @@ from brax.training.agents.ppo import networks as ppo_networks
 from brax.training.agents.ppo import networks_vision as ppo_networks_vision
 from brax.training.agents.ppo import train as ppo
 from brax.training import networks as brax_networks
-from brax.training import running_statistics
+from brax.training.acme import running_statistics
 
 # other import
 import os
@@ -61,10 +61,14 @@ def main():
 
     norm_dict = restored_params[0]
     if isinstance(norm_dict, dict):
-    
-        norm_state = running_statistics.RunningStatisticsState(**norm_dict)
-        
-    
+
+        norm_state = running_statistics.RunningStatisticsState(
+            count=norm_dict['count'],
+            mean=norm_dict['mean'],
+            std=norm_dict['std'],
+            summed_variance=norm_dict['summed_variance']
+        )
+
         restored_params = (norm_state, restored_params[1], restored_params[2])
 
     inference_fn = make_inference_fn(restored_params)
