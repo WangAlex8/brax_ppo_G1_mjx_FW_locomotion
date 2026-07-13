@@ -32,7 +32,7 @@ def main():
     
     raw_env = registry.load(env_name, config_overrides={
         "impl": "jax",
-        "lin_vel_x": [0.4, 0.4],       
+        "lin_vel_x": [0.7, 0.7],       
         "lin_vel_y": [0.0, 0.0],       
         "ang_vel_yaw": [0.0, 0.0],    
     })
