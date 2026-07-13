@@ -60,12 +60,12 @@ def main():
 
     norm_dict = restored_params[0]
     if isinstance(norm_dict, dict):
-        RunningStatisticsState = collections.namedtuple('RunningStatisticsState', ['count', 'mean', 'var'])
+        RunningStatisticsState = collections.namedtuple('RunningStatisticsState', ['count', 'mean', 'std'])
         
         norm_state = RunningStatisticsState(
             count=norm_dict['count'],
             mean=norm_dict['mean'],
-            var=norm_dict['var']
+            std=norm_dict['std'] 
         )
 
         restored_params = (norm_state, restored_params[1], restored_params[2])
