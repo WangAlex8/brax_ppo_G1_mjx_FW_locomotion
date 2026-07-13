@@ -43,7 +43,7 @@ def main():
     ppo_networks_instance = network_factory(
         env.observation_size,
         env.action_size,
-        preprocess_observations_fn=jax.nn.standardize
+        preprocess_observations_fn=running_statistics.normalize
     )
     make_inference_fn = ppo_networks.make_inference_fn(ppo_networks_instance)
 
