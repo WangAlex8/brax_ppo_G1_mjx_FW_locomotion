@@ -19,13 +19,14 @@ from brax.training.agents.ppo import train as ppo
 # other import
 import os
 import functools
+import numpy as np
 
 # gpu stuff
 jax.config.update('jax_platforms', 'cuda')
 print("JAX DEFINITIVE BACKEND:", jax.devices()) # when it prints, ensure its not using cpu
 
 def patch_device_put_replicated(x, devices):
-    devices_arr = jnp.array(devices)
+    devices_arr = np.array(devices)
     mesh = jax.sharding.Mesh(devices_arr, ('devices',))
     sharding = jax.sharding.NamedSharding(mesh, jax.sharding.PartitionSpec('devices',))
     return jax.tree_util.tree_map(
