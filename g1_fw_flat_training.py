@@ -36,7 +36,7 @@ jax.device_put_replicated = patch_device_put_replicated
 
 
 class humanoid_sim():
-    def __init__ (self, env_name: str = "G1_Joystick_Flat"):
+    def __init__ (self, env_name: str = "G1JoystickFlatTerrain"):
         self.env = registry.load(env_name, config_overrides={
             # desired motion config override
             "lin_vel_x": [1.0, 1.0],
