@@ -21,9 +21,12 @@ import os
 import functools
 import numpy as np
 
-# gpu stuff
+# gpu and memory
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
+os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
 jax.config.update('jax_platforms', 'cuda')
 print("JAX DEFINITIVE BACKEND:", jax.devices()) # when it prints, ensure its not using cpu
+
 
 def patch_device_put_replicated(x, devices):
     devices_arr = np.array(devices)
@@ -108,12 +111,12 @@ def main():
 
     ppo_training_params.update({
         'num_timesteps': 100000000,
-        'num_envs': 4096,           
+        'num_envs': 2048,           
         'episode_length': 1000,
         'learning_rate': 0.0003,    
         'entropy_cost': 0.008,
         'unroll_length': 16,      
-        'batch_size': 16384,        
+        'batch_size': 8192,        
         'num_minibatches': 8,       
         'normalize_observations': True,
         'reward_scaling': 0.1,
