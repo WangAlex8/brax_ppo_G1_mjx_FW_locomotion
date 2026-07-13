@@ -22,8 +22,11 @@ import functools
 import numpy as np
 
 # gpu and memory
-os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
-os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "true"
+os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.75"
+if "TF_GPU_ALLOCATOR" in os.environ:
+    del os.environ["TF_GPU_ALLOCATOR"]
+
 jax.config.update('jax_platforms', 'cuda')
 print("JAX DEFINITIVE BACKEND:", jax.devices()) # when it prints, ensure its not using cpu
 
@@ -111,13 +114,13 @@ def main():
 
     ppo_training_params.update({
         'num_timesteps': 100000000,
-        'num_envs': 2048,           
+        'num_envs': 1024,          
         'episode_length': 1000,
         'learning_rate': 0.0003,    
         'entropy_cost': 0.008,
         'unroll_length': 16,      
-        'batch_size': 8192,        
-        'num_minibatches': 8,       
+        'batch_size': 4096,          
+        'num_minibatches': 4,       
         'normalize_observations': True,
         'reward_scaling': 0.1,
         'num_evals': 10,            
