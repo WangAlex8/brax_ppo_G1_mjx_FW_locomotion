@@ -29,7 +29,13 @@ warnings.filterwarnings('ignore')
 
 def main():
     env_name = 'G1JoystickFlatTerrain'
-    raw_env = registry.load(env_name, config_overrides={"impl": "jax"})
+    
+    raw_env = registry.load(env_name, config_overrides={
+        "impl": "jax",
+        "lin_vel_x": [0.4, 0.4],       
+        "lin_vel_y": [0.0, 0.0],       
+        "ang_vel_yaw": [0.0, 0.0],    
+    })
     
     env = wrapper.wrap_for_brax_training(raw_env)
     
