@@ -15,6 +15,7 @@ from mujoco_playground import wrapper
 from brax.training.agents.ppo import networks as ppo_networks
 from brax.training.agents.ppo import networks_vision as ppo_networks_vision
 from brax.training.agents.ppo import train as ppo
+from brax.training import networks as brax_networks
 
 # other import
 import os
@@ -45,16 +46,27 @@ def main():
     make_inference_fn = ppo_networks.make_inference_fn(ppo_networks_instance)
 
 
+
     checkpoint_dir = os.path.abspath('./g1_walking_param_A100_cloud')
     mngr = ocp.CheckpointManager(checkpoint_dir, ocp.PyTreeCheckpointer())
     
-
     step = mngr.latest_step()
     if step is None:
-        print("No checkpoint found. Make sure your training script finished successfully.")
+        print("No checkpoint found.")
         return
         
     restored_params = mngr.restore(step)
+
+    norm_dict = restored_params[0]
+    if isinstance(norm_dict, dict):
+        norm_state = brax_networks.RunningStatisticsState(
+            count=norm_dict['count'],
+            mean=norm_dict['mean'],
+            var=norm_dict['var']
+        )
+
+        restored_params = (norm_state, restored_params[1], restored_params[2])
+
     inference_fn = make_inference_fn(restored_params)
     jit_inference_fn = jax.jit(inference_fn)
 
