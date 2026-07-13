@@ -43,16 +43,13 @@ def main():
         env.action_size,
         preprocess_observations_fn=running_statistics.normalize
     )
-    
     make_inference_fn = ppo_networks.make_inference_fn(ppo_networks_instance)
 
     checkpoint_dir = os.path.abspath('./g1_walking_param_A100_cloud')
     mngr = ocp.CheckpointManager(checkpoint_dir, ocp.PyTreeCheckpointer())
     
-    
     step = mngr.latest_step()
     if step is None:
-        print("No checkpoint found.")
         print("No checkpoint found.")
         return
         
@@ -68,6 +65,7 @@ def main():
         )
         restored_params = (norm_state, restored_params[1], restored_params[2])
 
+
     inference_fn = make_inference_fn(restored_params, deterministic=True)
     jit_inference_fn = jax.jit(inference_fn)
 
@@ -80,6 +78,23 @@ def main():
     
     renderer = mujoco.Renderer(mj_model, height=1080, width=1920)
     
+    cam = mujoco.MjvCamera()
+    cam.type = mujoco.mjtCamera.mjCAMERA_TRACKING
+    
+   
+    try:
+        cam.trackbodyid = mj_model.body('pelvis').id
+    except Exception:
+        try:
+            cam.trackbodyid = mj_model.body('torso').id
+        except Exception:
+            cam.trackbodyid = 1  
+            
+    cam.distance = 2.0      
+    cam.azimuth = 60.0      
+    cam.elevation = -15.0   
+    
+
     rng = jax.random.PRNGKey(42)
     rng_batched = jnp.stack([rng])
     state = env.reset(rng_batched)
@@ -93,32 +108,37 @@ def main():
     trajectory_qpos = []
     trajectory_qvel = []
     
+  
     for _ in range(total_steps):
         rng, subkey = jax.random.split(rng)
         act_rng, subkey = jax.random.split(subkey)
-        
         
         action, _ = jit_inference_fn(state.obs, act_rng)
         state = jit_step(state, action)
         
 
-        trajectory_qpos.append(state.pipeline_state.qpos[0])
-        trajectory_qvel.append(state.pipeline_state.qvel[0])
+        if hasattr(state, 'pipeline_state'):
+            trajectory_qpos.append(state.pipeline_state.qpos[0])
+            trajectory_qvel.append(state.pipeline_state.qvel[0])
+        else:
+            trajectory_qpos.append(state.data.qpos[0])
+            trajectory_qvel.append(state.data.qvel[0])
 
+  
     print("Transferring trajectory to CPU...")
     trajectory_qpos = jax.device_get(trajectory_qpos)
     trajectory_qvel = jax.device_get(trajectory_qvel)
 
-
     print("Rendering frames to video...")
     for i in range(total_steps):
-        # Apply the pre-calculated states directly
+
         mj_data.qpos = trajectory_qpos[i]
         mj_data.qvel = trajectory_qvel[i]
         
+        # kinematics pass
         mujoco.mj_forward(mj_model, mj_data)
         
-        renderer.update_scene(mj_data, camera="track")
+        renderer.update_scene(mj_data, camera=cam)
         frames.append(renderer.render())
 
     output_path = "g1_walking_demo.mp4"
