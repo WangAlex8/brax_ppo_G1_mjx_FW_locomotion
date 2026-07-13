@@ -42,8 +42,8 @@ def main():
         env.observation_size,
         env.action_size,
         preprocess_observations_fn=running_statistics.normalize
-        preprocess_observations_fn=running_statistics.normalize
     )
+    
     make_inference_fn = ppo_networks.make_inference_fn(ppo_networks_instance)
 
     checkpoint_dir = os.path.abspath('./g1_walking_param_A100_cloud')
