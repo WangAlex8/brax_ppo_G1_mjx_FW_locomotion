@@ -67,7 +67,7 @@ def main():
     mj_data = mujoco.MjData(mj_model)
     
 
-    renderer = mujoco.Renderer(mj_model, height=720, width=1280)
+    renderer = mujoco.Renderer(mj_model, height=1080, width=1920)
     
     rng = jax.random.PRNGKey(42)
     state = env.reset(rng)
@@ -96,7 +96,7 @@ def main():
   
     output_path = "g1_walking_demo.mp4"
     imageio.mimsave(output_path, frames, fps=fps)
-    print(f"Video successfully saved to {output_path}")
+    print(f"video save to {output_path}")
 
 if __name__ == "__main__":
     main()
