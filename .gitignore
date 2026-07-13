@@ -1,0 +1,9 @@
+mujoco_playground/
+g1_walking_param/
+g1_walking_param_A100_cloud/
+NOTE.txt
+python file template.py
+*.mp4
+__pycache__/
+*.pyc
+*:Zone.Identifier
