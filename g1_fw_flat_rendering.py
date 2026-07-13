@@ -22,6 +22,7 @@ import os
 import functools
 import imageio
 import numpy as np
+import collections
 
 
 # Suppress warnings
@@ -59,7 +60,9 @@ def main():
 
     norm_dict = restored_params[0]
     if isinstance(norm_dict, dict):
-        norm_state = brax_networks.RunningStatisticsState(
+        RunningStatisticsState = collections.namedtuple('RunningStatisticsState', ['count', 'mean', 'var'])
+        
+        norm_state = RunningStatisticsState(
             count=norm_dict['count'],
             mean=norm_dict['mean'],
             var=norm_dict['var']
