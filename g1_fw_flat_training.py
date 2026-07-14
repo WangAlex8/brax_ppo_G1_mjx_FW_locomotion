@@ -47,9 +47,9 @@ class humanoid_sim():
         self.env = registry.load(env_name, config_overrides={
             "impl": "jax",
             # desired motion config override
-            "lin_vel_x": [1.0, 1.0],
-            "lin_vel_y": [0.0, 0.0],
-            "ang_vel_yaw": [0.0, 0.0],
+            "lin_vel_x": [0.0, 1.0],
+            "lin_vel_y": [-0.2, 0.2],
+            "ang_vel_yaw": [-0.5, 0.5],
             # task reward weights
             'reward_config.scales.tracking_lin_vel' : 2.5, # task reward for desired forward velocity
             'reward_config.scales.alive' : 0.7, # constant positive value given for every step where robot doesn't fall
@@ -62,9 +62,9 @@ class humanoid_sim():
             'reward_config.scales.contact_force': -0.001, # impact penality, 惩罚 high ground forces to reduce stomping (faster mechanical wear)
             'reward_config.scales.action_rate': -0.01,   # penalize jerk between steps
             # rewards for lifting legs (to get it to actually walk and not cheat the forward velocity rewards)
-            'reward_config.scales.feet_air_time': 1.0,
+            'reward_config.scales.feet_air_time': 2.0,
             'reward_config.scales.feet_slip': -0.15,
-            'reward_config.scales.feet_clearance': 0.1,
+            'reward_config.scales.feet_clearance': 0.8,
             'reward_config.scales.feet_phase': 0.5
 
         })
