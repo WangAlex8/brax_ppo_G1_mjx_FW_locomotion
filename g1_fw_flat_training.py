@@ -65,7 +65,7 @@ class humanoid_sim():
             'reward_config.scales.feet_air_time': 2.0,
             'reward_config.scales.feet_slip': -0.15,
             'reward_config.scales.feet_clearance': 0.8,
-            'reward_config.scales.feet_phase': 0.5
+            'reward_config.scales.feet_phase': 0.6
 
         })
 
