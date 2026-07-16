@@ -55,16 +55,16 @@ class humanoid_sim():
             'reward_config.scales.alive' : 0.7, # constant positive value given for every step where robot doesn't fall
             # stability penalities
             'reward_config.scales.orientation': -0.8, # penalizes deivations from an upright torso
-            'reward_config.scales.ang_vel_xy': -0.9, # resists pitch and roll
+            'reward_config.scales.ang_vel_xy': -1.5, # resists pitch and roll
             'reward_config.scales.lin_vel_z': -2.0, # no bouncing
             # Smoothness
             'reward_config.scales.torques': -0.00001, #penality square of joint torques; penalizes jittery movements
             'reward_config.scales.contact_force': -0.001, # impact penality, 惩罚 high ground forces to reduce stomping (faster mechanical wear)
             'reward_config.scales.action_rate': -0.01,   # penalize jerk between steps
             # rewards for lifting legs (to get it to actually walk and not cheat the forward velocity rewards)
-            'reward_config.scales.feet_air_time': 2.0,
+            'reward_config.scales.feet_air_time': 2.8,
             'reward_config.scales.feet_slip': -0.15,
-            'reward_config.scales.feet_clearance': 0.8,
+            'reward_config.scales.feet_clearance': 1.8,
             'reward_config.scales.feet_phase': 0.6
 
         })
